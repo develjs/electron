@@ -16,6 +16,7 @@
 #include "native_mate/dictionary.h"
 #include "native_mate/object_template_builder.h"
 #include "native_mate/wrappable.h"
+#include "atom/common/asar/asar_encode.h"
 
 namespace {
 
@@ -39,6 +40,7 @@ class Archive : public mate::Wrappable<Archive> {
         .SetMethod("readdir", &Archive::Readdir)
         .SetMethod("realpath", &Archive::Realpath)
         .SetMethod("copyFileOut", &Archive::CopyFileOut)
+        .SetMethod("encodeBuffer", &Archive::EncodeBuffer)
         .SetMethod("getFd", &Archive::GetFD)
         .SetMethod("destroy", &Archive::Destroy);
   }
@@ -89,6 +91,17 @@ class Archive : public mate::Wrappable<Archive> {
     if (!archive_ || !archive_->Readdir(path, &files))
       return v8::False(isolate);
     return mate::ConvertToV8(isolate, files);
+  }
+
+  // encode/decode buffer
+  // used ArrayBuffer standart type for get param from JS
+  v8::Local<v8::Value> EncodeBuffer(v8::Isolate* isolate, v8::Local<v8::Value> buffer){
+      if (!buffer->IsArrayBuffer()){
+        return v8::False(isolate);
+      }
+      v8::Local<v8::ArrayBuffer> _buffer = v8::Local<v8::ArrayBuffer>::Cast(buffer); // revert to ArrayBuffer
+      asar::encodeBuffer((char*)_buffer->GetContents().Data(), _buffer->ByteLength());
+      return v8::True(isolate);
   }
 
   // Returns the path of file with symbol link resolved.

@@ -14,6 +14,9 @@
 #include "base/stl_util.h"
 #include "base/threading/thread_local.h"
 
+#ifdef ASAR_ENCODE_KEY
+#include "atom/common/asar/asar_encode.h"
+#endif
 namespace asar {
 
 namespace {
@@ -92,8 +95,13 @@ bool ReadFileToString(const base::FilePath& path, std::string* contents) {
     return false;
 
   contents->resize(info.size);
-  return static_cast<int>(info.size) == src.Read(
-      info.offset, const_cast<char*>(contents->data()), contents->size());
+  bool ok = (static_cast<int>(info.size) == src.Read(
+      info.offset, const_cast<char*>(contents->data()), contents->size()));
+#ifdef ASAR_ENCODE_KEY
+  if (ok)
+    asar::encodeBuffer(contents);
+#endif
+  return ok;
 }
 
 }  // namespace asar

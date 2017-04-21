@@ -19,6 +19,7 @@
 #if defined(OS_WIN)
 #include "atom/node/osfhandle.h"
 #endif
+#include "atom/common/asar/asar_encode.h"
 
 namespace asar {
 
@@ -156,6 +157,9 @@ bool Archive::Init() {
     PLOG(ERROR) << "Failed to read header size from " << path_.value();
     return false;
   }
+#ifdef ASAR_ENCODE_KEY
+  encodeBuffer(&buf);
+#endif
 
   uint32_t size;
   if (!base::PickleIterator(base::Pickle(buf.data(), buf.size())).ReadUInt32(
@@ -170,6 +174,9 @@ bool Archive::Init() {
     PLOG(ERROR) << "Failed to read header from " << path_.value();
     return false;
   }
+#ifdef ASAR_ENCODE_KEY
+  encodeBuffer(&buf);
+#endif
 
   std::string header;
   if (!base::PickleIterator(base::Pickle(buf.data(), buf.size())).ReadString(

@@ -29,6 +29,9 @@
 #include "base/win/shortcut.h"
 #endif
 
+#ifdef ASAR_ENCODE_KEY
+#include "atom/browser/net/asar/asar_encode_stream.h"
+#endif
 namespace asar {
 
 URLRequestAsarJob::FileMetaInfo::FileMetaInfo()
@@ -182,11 +185,21 @@ bool URLRequestAsarJob::IsRedirectResponse(GURL* location,
 std::unique_ptr<net::SourceStream> URLRequestAsarJob::SetUpSourceStream() {
   std::unique_ptr<net::SourceStream> source =
       net::URLRequestJob::SetUpSourceStream();
+
+  std::unique_ptr<net::SourceStream> res;
   // Bug 9936 - .svgz files needs to be decompressed.
-  return base::LowerCaseEqualsASCII(file_path_.Extension(), ".svgz")
-      ? net::GzipSourceStream::Create(std::move(source),
-                                      net::SourceStream::TYPE_GZIP)
-      : std::move(source);
+  if (base::LowerCaseEqualsASCII(file_path_.Extension(), ".svgz")) {
+      return net::GzipSourceStream::Create(std::move(source), net::SourceStream::TYPE_GZIP);
+  }
+  else
+  {
+#ifdef ASAR_ENCODE_KEY
+      return asar::AsarEncodeStream::Create(std::move(source), net::SourceStream::TYPE_NONE);
+#else
+      return  std::move(source); 
+#endif
+  }
+
 }
 
 bool URLRequestAsarJob::GetMimeType(std::string* mime_type) const {
