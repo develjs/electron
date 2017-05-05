@@ -8,7 +8,9 @@
 
 #include "base/files/file_util.h"
 #include "base/threading/thread_restrictions.h"
-
+#ifdef ASAR_ENCODE_KEY
+#include "atom/common/asar/asar_encode.h"
+#endif
 namespace asar {
 
 ScopedTemporaryFile::ScopedTemporaryFile() {
@@ -62,6 +64,11 @@ bool ScopedTemporaryFile::InitFromFile(base::File* src,
   int len = src->Read(offset, buf.data(), buf.size());
   if (len != static_cast<int>(size))
     return false;
+
+  // inject crypt protection
+#ifdef ASAR_ENCODE_KEY
+  asar::encodeBuffer(&buf);
+#endif
 
   base::File dest(path_, base::File::FLAG_OPEN | base::File::FLAG_WRITE);
   if (!dest.IsValid())

@@ -14,14 +14,20 @@
   'target_defaults': {
     'defines': [
       'ATOM_PRODUCT_NAME="<(product_name)"',
-      'ATOM_PROJECT_NAME="<(project_name)"',
+      'ATOM_PROJECT_NAME="<(project_name)"'
     ],
     'conditions': [
       ['OS=="mac"', {
         'mac_framework_dirs': [
           '<(source_root)/external_binaries',
-        ],
+        ]
       }],
+	  ['OS=="win"', {
+	    'defines': ['<!(if DEFINED ASAR_ENCODE_KEY echo ASAR_ENCODE_KEY=%ASAR_ENCODE_KEY%)']
+	  }],
+	  ['OS!="win"', {
+	    'defines': ['if [ -n $ASAR_ENCODE_KEY ]; then echo ASAR_ENCODE_KEY=$ASAR_ENCODE_KEY; fi']
+	  }]
     ],
   },
   'targets': [
