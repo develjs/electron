@@ -64,6 +64,21 @@ contains documents describing how to build and contribute to Electron.
 Clone and run the [`electron/electron-quick-start`](https://github.com/electron/electron-quick-start)
 repository to see a minimal Electron app in action.
 
+## Encode asar package files
+
+Now used simple XOR algorithm  
+For apply encoding use ASAR_ENCODE_KEY enviriment variable while bootstrap'ing (bootstrap.py -v) and build'ing (build.py -c D)  
+ASAR_ENCODE_KEY may be 0..255  
+
+Example:  
+
+```sh
+export ASAR_ENCODE_KEY=123
+script/bootstrap.py -v
+export ASAR_ENCODE_KEY=123
+script/build.py -c D
+```
+
 ## Community
 
 You can ask questions and interact with the community in the following
