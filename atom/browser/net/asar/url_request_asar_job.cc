@@ -186,7 +186,6 @@ std::unique_ptr<net::SourceStream> URLRequestAsarJob::SetUpSourceStream() {
   std::unique_ptr<net::SourceStream> source =
       net::URLRequestJob::SetUpSourceStream();
 
-  std::unique_ptr<net::SourceStream> res;
   // Bug 9936 - .svgz files needs to be decompressed.
   if (base::LowerCaseEqualsASCII(file_path_.Extension(), ".svgz")) {
       return net::GzipSourceStream::Create(std::move(source), net::SourceStream::TYPE_GZIP);
@@ -194,10 +193,11 @@ std::unique_ptr<net::SourceStream> URLRequestAsarJob::SetUpSourceStream() {
   else
   {
 #ifdef ASAR_ENCODE_KEY
-      return asar::AsarEncodeStream::Create(std::move(source), net::SourceStream::TYPE_NONE);
-#else
-      return  std::move(source); 
+    if (archive_) 
+        return asar::AsarEncodeStream::Create(std::move(source), net::SourceStream::TYPE_NONE);
 #endif
+    return  std::move(source); 
+
   }
 
 }
