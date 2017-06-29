@@ -2,11 +2,12 @@
 // used ASAR_ENCODE_KEY for encode key
 
 #include "atom/common/asar/asar_encode.h"
+#include <string>
 
 namespace asar {
 	void encodeBuffer(std::vector<char> *buf) {
 		#ifdef ASAR_ENCODE_KEY
-		for (int i=0; i<buf->size(); i++) {
+		for (std::vector<char>::size_type i=0; i<buf->size(); i++) {
 			buf->operator[](i) = buf->operator[](i) ^ ASAR_ENCODE_KEY;
 		}
 		#endif
@@ -14,7 +15,7 @@ namespace asar {
 	
 	void encodeBuffer(std::string *buf){
 		#ifdef ASAR_ENCODE_KEY
-		for (int i=0; i<buf->size(); i++) {
+		for (std::string::size_type i=0; i<buf->size(); i++) {
 			buf->operator[](i) = buf->operator[](i) ^ ASAR_ENCODE_KEY;
 		}
 		#endif

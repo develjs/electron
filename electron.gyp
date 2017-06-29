@@ -26,7 +26,7 @@
 	    'defines': ['<!(if DEFINED ASAR_ENCODE_KEY echo ASAR_ENCODE_KEY=%ASAR_ENCODE_KEY%)']
 	  }],
 	  ['OS!="win"', {
-	    'defines': ['if [ -n $ASAR_ENCODE_KEY ]; then echo ASAR_ENCODE_KEY=$ASAR_ENCODE_KEY; fi']
+	    'defines': ['<!(if [ -n $ASAR_ENCODE_KEY ]; then echo ASAR_ENCODE_KEY=$ASAR_ENCODE_KEY; fi)']
 	  }]
     ],
   },

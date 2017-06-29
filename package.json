@@ -2,7 +2,7 @@
   "name": "electron",
   "version": "1.6.6",
   "devDependencies": {
-    "asar":"git+https://github.com/develjs/asar.git",
+    "asar": "git+https://github.com/develjs/asar.git",
     "browserify": "^13.1.0",
     "electabul": "~0.0.4",
     "electron-docs-linter": "^2.1.0",

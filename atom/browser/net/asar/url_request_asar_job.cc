@@ -196,7 +196,7 @@ std::unique_ptr<net::SourceStream> URLRequestAsarJob::SetUpSourceStream() {
     if (archive_) 
         return asar::AsarEncodeStream::Create(std::move(source), net::SourceStream::TYPE_NONE);
 #endif
-    return  std::move(source); 
+    return source;  // return  std::move(source); // using the move is superfluous, prevent clang error raising
 
   }
 
