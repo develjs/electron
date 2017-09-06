@@ -64,10 +64,11 @@ contains documents describing how to build and contribute to Electron.
 Clone and run the [`electron/electron-quick-start`](https://github.com/electron/electron-quick-start)
 repository to see a minimal Electron app in action.
 
-## Encode asar package files
+## Encode sources
 
-Now used simple XOR algorithm  
-For apply encoding use ASAR_ENCODE_KEY enviriment variable while bootstrap'ing (bootstrap.py -v) and build'ing (build.py -c D)  
+You can use the encryption for resources (asar) in your project. Now supported simple XOR algorithm with 8bit key.  
+This branch using patched Asar node-package from [the repository](https://github.com/develjs/asar) to encode resource.  
+For apply encoding at build stage use ASAR_ENCODE_KEY enviroment variable while bootstrap'ing (bootstrap.py -v) and build'ing (build.py -c D).  
 ASAR_ENCODE_KEY may be 0..255  
 
 Example:  
@@ -77,6 +78,29 @@ export ASAR_ENCODE_KEY=123
 script/bootstrap.py -v
 export ASAR_ENCODE_KEY=123
 script/build.py -c D
+```
+
+After building the electron, you can package your resources using a patched Asar node-package.  
+First register it in your package.json  
+
+```sh
+...
+"devDependencies": {
+   "asar": "git+https://github.com/develjs/asar.git",
+...
+```
+
+and install
+
+```sh
+npm i asar
+```
+
+To pack use standart CLI command:  
+
+```sh
+export ASAR_ENCODE_KEY=123
+node_modules/.bin/asar p src-folder/ resources/app.asar
 ```
 
 ## Community
