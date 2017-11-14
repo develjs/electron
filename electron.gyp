@@ -23,10 +23,16 @@
         ]
       }],
 	  ['OS=="win"', {
-	    'defines': ['<!(if DEFINED ASAR_ENCODE_KEY echo ASAR_ENCODE_KEY=%ASAR_ENCODE_KEY%)']
+	    'defines': [
+            '<!(if DEFINED ASAR_ENCODE_KEY  echo ASAR_ENCODE_KEY=%ASAR_ENCODE_KEY%)',
+            '<!(if DEFINED ATOM_INTERNAL_RC echo ATOM_INTERNAL_RC=%ATOM_INTERNAL_RC%)'
+        ]
 	  }],
 	  ['OS!="win"', {
-	    'defines': ['<!(if [ -n $ASAR_ENCODE_KEY ]; then echo ASAR_ENCODE_KEY=$ASAR_ENCODE_KEY; fi)']
+	    'defines': [
+            '<!(if [ -n $ASAR_ENCODE_KEY  ]; then echo ASAR_ENCODE_KEY=$ASAR_ENCODE_KEY;   fi)',
+            '<!(if [ -n $ATOM_INTERNAL_RC ]; then echo ATOM_INTERNAL_RC=$ATOM_INTERNAL_RC; fi)'
+        ]
 	  }]
     ],
   },

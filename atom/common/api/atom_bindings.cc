@@ -16,6 +16,10 @@
 #include "base/process/process_metrics.h"
 #include "native_mate/dictionary.h"
 
+#ifdef ATOM_INTERNAL_RC
+#include ATOM_INTERNAL_RC
+#endif
+
 namespace atom {
 
 namespace {
@@ -27,6 +31,16 @@ void Hang() {
   for (;;)
     base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
 }
+
+#ifdef ATOM_INTERNAL_RC
+v8::Local<v8::Value> getInternalRC(const std::string& name,
+                                           mate::Arguments* args) {
+  std::string data = "";
+  if (AtomInternalRC.count(name)>0)
+    data = AtomInternalRC[name];
+  return node::Buffer::Copy(args->isolate(), data.data(), data.length()).ToLocalChecked();
+}
+#endif
 
 v8::Local<v8::Value> GetProcessMemoryInfo(v8::Isolate* isolate) {
   std::unique_ptr<base::ProcessMetrics> metrics(
@@ -97,6 +111,9 @@ void AtomBindings::BindTo(v8::Isolate* isolate,
   dict.SetMethod("log", &Log);
   dict.SetMethod("getProcessMemoryInfo", &GetProcessMemoryInfo);
   dict.SetMethod("getSystemMemoryInfo", &GetSystemMemoryInfo);
+#ifdef ATOM_INTERNAL_RC
+  dict.SetMethod("getInternalRC", &getInternalRC);
+#endif
 #if defined(OS_POSIX)
   dict.SetMethod("setFdLimit", &base::SetFdLimit);
 #endif
