@@ -16,10 +16,14 @@
 #include "base/process/process_metrics.h"
 #include "native_mate/dictionary.h"
 
+#ifdef ATOM_INTERNAL_RC
+#ifdef _MSC_VER
+#include ATOM_INTERNAL_RC
+#else
 #define Q(x) #x
 #define QUOTE(x) Q(x)
-#ifdef ATOM_INTERNAL_RC
 #include QUOTE(ATOM_INTERNAL_RC)
+#endif
 #endif
 
 namespace atom {
