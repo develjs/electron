@@ -103,6 +103,28 @@ export ASAR_ENCODE_KEY=123
 node_modules/.bin/asar p src-folder/ resources/app.asar
 ```
 
+Also you can define auto-injection scripts into page on-dom-ready event.  
+To do this pre-create c-header files with scripts contents:  
+
+```sh
+// boot_js.h
+#include <string>
+#include <map>
+std::map<std::string, std::string> AtomBootRC = {
+    { "boot1.js", std::string({ 118,97,114,32,119,105,110,114,101,103,61,114 }) },
+    { "boot2.js", "window.MY_VAR=1;" }
+}
+```
+
+And ATOM_BOOT_RC enviroment var to add defined scripts into app:  
+
+```sh
+export ATOM_BOOT_RC=boot_js.h
+...
+```
+
+
+
 ## Community
 
 You can ask questions and interact with the community in the following
