@@ -200,9 +200,13 @@ content::WebContents* CommonWebContentsDelegate::GetWebContents() const {
 
 content::WebContents*
 CommonWebContentsDelegate::GetDevToolsWebContents() const {
+#ifndef ATOM_DISABLE_DEBUGGER
   if (!web_contents_)
     return nullptr;
   return web_contents_->GetDevToolsWebContents();
+#else
+  return nullptr;
+#endif
 }
 
 content::WebContents* CommonWebContentsDelegate::OpenURLFromTab(
@@ -294,6 +298,7 @@ blink::WebSecurityStyle CommonWebContentsDelegate::GetSecurityStyle(
 
 void CommonWebContentsDelegate::DevToolsSaveToFile(
     const std::string& url, const std::string& content, bool save_as) {
+#ifndef ATOM_DISABLE_DEBUGGER
   base::FilePath path;
   auto it = saved_files_.find(url);
   if (it != saved_files_.end() && !save_as) {
@@ -317,10 +322,12 @@ void CommonWebContentsDelegate::DevToolsSaveToFile(
       base::Bind(&WriteToFile, path, content),
       base::Bind(&CommonWebContentsDelegate::OnDevToolsSaveToFile,
                  base::Unretained(this), url));
+#endif
 }
 
 void CommonWebContentsDelegate::DevToolsAppendToFile(
     const std::string& url, const std::string& content) {
+#ifndef ATOM_DISABLE_DEBUGGER
   auto it = saved_files_.find(url);
   if (it == saved_files_.end())
     return;
@@ -330,9 +337,11 @@ void CommonWebContentsDelegate::DevToolsAppendToFile(
       base::Bind(&AppendToFile, it->second, content),
       base::Bind(&CommonWebContentsDelegate::OnDevToolsAppendToFile,
                  base::Unretained(this), url));
+#endif
 }
 
 void CommonWebContentsDelegate::DevToolsRequestFileSystems() {
+#ifndef ATOM_DISABLE_DEBUGGER
   auto file_system_paths = GetAddedFileSystemPaths(GetDevToolsWebContents());
   if (file_system_paths.empty()) {
     base::ListValue empty_file_system_value;
@@ -358,10 +367,12 @@ void CommonWebContentsDelegate::DevToolsRequestFileSystems() {
     file_system_value.Append(CreateFileSystemValue(file_system));
   web_contents_->CallClientFunction("DevToolsAPI.fileSystemsLoaded",
                                     &file_system_value, nullptr, nullptr);
+#endif
 }
 
 void CommonWebContentsDelegate::DevToolsAddFileSystem(
     const base::FilePath& file_system_path) {
+#ifndef ATOM_DISABLE_DEBUGGER
   base::FilePath path = file_system_path;
   if (path.empty()) {
     std::vector<base::FilePath> paths;
@@ -393,10 +404,12 @@ void CommonWebContentsDelegate::DevToolsAddFileSystem(
   web_contents_->CallClientFunction("DevToolsAPI.fileSystemAdded",
                                     file_system_value.get(),
                                     nullptr, nullptr);
+#endif
 }
 
 void CommonWebContentsDelegate::DevToolsRemoveFileSystem(
     const base::FilePath& file_system_path) {
+#ifndef ATOM_DISABLE_DEBUGGER
   if (!web_contents_)
     return;
 
@@ -412,11 +425,13 @@ void CommonWebContentsDelegate::DevToolsRemoveFileSystem(
   web_contents_->CallClientFunction("DevToolsAPI.fileSystemRemoved",
                                     &file_system_path_value,
                                     nullptr, nullptr);
+#endif
 }
 
 void CommonWebContentsDelegate::DevToolsIndexPath(
     int request_id,
     const std::string& file_system_path) {
+#ifndef ATOM_DISABLE_DEBUGGER
   if (!IsDevToolsFileSystemAdded(GetDevToolsWebContents(), file_system_path)) {
     OnDevToolsIndexingDone(request_id, file_system_path);
     return;
@@ -440,20 +455,24 @@ void CommonWebContentsDelegate::DevToolsIndexPath(
                          base::Unretained(this),
                          request_id,
                          file_system_path)));
+#endif
 }
 
 void CommonWebContentsDelegate::DevToolsStopIndexing(int request_id) {
+#ifndef ATOM_DISABLE_DEBUGGER
   auto it = devtools_indexing_jobs_.find(request_id);
   if (it == devtools_indexing_jobs_.end())
     return;
   it->second->Stop();
   devtools_indexing_jobs_.erase(it);
+#endif
 }
 
 void CommonWebContentsDelegate::DevToolsSearchInPath(
     int request_id,
     const std::string& file_system_path,
     const std::string& query) {
+#ifndef ATOM_DISABLE_DEBUGGER
   if (!IsDevToolsFileSystemAdded(GetDevToolsWebContents(), file_system_path)) {
     OnDevToolsSearchCompleted(request_id,
                               file_system_path,
@@ -467,22 +486,27 @@ void CommonWebContentsDelegate::DevToolsSearchInPath(
                  base::Unretained(this),
                  request_id,
                  file_system_path));
+#endif
 }
 
 void CommonWebContentsDelegate::OnDevToolsSaveToFile(
     const std::string& url) {
+#ifndef ATOM_DISABLE_DEBUGGER
   // Notify DevTools.
   base::StringValue url_value(url);
   web_contents_->CallClientFunction(
       "DevToolsAPI.savedURL", &url_value, nullptr, nullptr);
+#endif
 }
 
 void CommonWebContentsDelegate::OnDevToolsAppendToFile(
     const std::string& url) {
+#ifndef ATOM_DISABLE_DEBUGGER
   // Notify DevTools.
   base::StringValue url_value(url);
   web_contents_->CallClientFunction(
       "DevToolsAPI.appendedToURL", &url_value, nullptr, nullptr);
+#endif
 }
 
 void CommonWebContentsDelegate::OnDevToolsIndexingWorkCalculated(
@@ -502,6 +526,7 @@ void CommonWebContentsDelegate::OnDevToolsIndexingWorked(
     int request_id,
     const std::string& file_system_path,
     int worked) {
+#ifndef ATOM_DISABLE_DEBUGGER
   base::FundamentalValue request_id_value(request_id);
   base::StringValue file_system_path_value(file_system_path);
   base::FundamentalValue worked_value(worked);
@@ -509,11 +534,13 @@ void CommonWebContentsDelegate::OnDevToolsIndexingWorked(
                                     &request_id_value,
                                     &file_system_path_value,
                                     &worked_value);
+#endif
 }
 
 void CommonWebContentsDelegate::OnDevToolsIndexingDone(
     int request_id,
     const std::string& file_system_path) {
+#ifndef ATOM_DISABLE_DEBUGGER
   devtools_indexing_jobs_.erase(request_id);
   base::FundamentalValue request_id_value(request_id);
   base::StringValue file_system_path_value(file_system_path);
@@ -521,12 +548,14 @@ void CommonWebContentsDelegate::OnDevToolsIndexingDone(
                                     &request_id_value,
                                     &file_system_path_value,
                                     nullptr);
+#endif
 }
 
 void CommonWebContentsDelegate::OnDevToolsSearchCompleted(
     int request_id,
     const std::string& file_system_path,
     const std::vector<std::string>& file_paths) {
+#ifndef ATOM_DISABLE_DEBUGGER
   base::ListValue file_paths_value;
   for (const auto& file_path : file_paths) {
     file_paths_value.AppendString(file_path);
@@ -537,6 +566,7 @@ void CommonWebContentsDelegate::OnDevToolsSearchCompleted(
                                     &request_id_value,
                                     &file_system_path_value,
                                     &file_paths_value);
+#endif
 }
 
 void CommonWebContentsDelegate::SetHtmlApiFullscreen(bool enter_fullscreen) {

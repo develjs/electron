@@ -384,9 +384,10 @@ class WebContents : public mate::TrackableObject<WebContents>,
   void OnGetZoomLevel(IPC::Message* reply_msg);
 
   v8::Global<v8::Value> session_;
+#ifndef ATOM_DISABLE_DEBUGGER
   v8::Global<v8::Value> devtools_web_contents_;
   v8::Global<v8::Value> debugger_;
-
+#endif
   std::unique_ptr<WebViewGuestDelegate> guest_delegate_;
 
   // The host webcontents that may contain this webcontents.
@@ -404,8 +405,10 @@ class WebContents : public mate::TrackableObject<WebContents>,
   // Whether background throttling is disabled.
   bool background_throttling_;
 
+//#ifndef ATOM_DISABLE_DEBUGGER
   // Whether to enable devtools.
   bool enable_devtools_;
+//#endif
 
   // Container to hold url parms for deferred load when
   // there is a pending navigation entry.

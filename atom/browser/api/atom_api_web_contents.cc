@@ -7,7 +7,9 @@
 #include <set>
 #include <string>
 
+#ifndef ATOM_DISABLE_DEBUGGER
 #include "atom/browser/api/atom_api_debugger.h"
+#endif
 #include "atom/browser/api/atom_api_session.h"
 #include "atom/browser/api/atom_api_window.h"
 #include "atom/browser/atom_browser_client.h"
@@ -287,7 +289,11 @@ WebContents::WebContents(v8::Isolate* isolate,
       type_(type),
       request_id_(0),
       background_throttling_(true),
+#ifndef ATOM_DISABLE_DEBUGGER
       enable_devtools_(true) {
+#else
+      enable_devtools_(false) {
+#endif
   if (type == REMOTE) {
     web_contents->SetUserAgentOverride(GetBrowserContext()->GetUserAgent());
     Init(isolate);
@@ -306,7 +312,11 @@ WebContents::WebContents(v8::Isolate* isolate, const mate::Dictionary& options)
       type_(BROWSER_WINDOW),
       request_id_(0),
       background_throttling_(true),
+#ifndef ATOM_DISABLE_DEBUGGER
       enable_devtools_(true) {
+#else
+      enable_devtools_(false) {
+#endif
   // Read options.
   options.Get("backgroundThrottling", &background_throttling_);
 
@@ -888,14 +898,19 @@ void WebContents::Observe(int type,
 }
 
 void WebContents::DevToolsReloadPage() {
+#ifndef ATOM_DISABLE_DEBUGGER
   Emit("devtools-reload-page");
+#endif
 }
 
 void WebContents::DevToolsFocused() {
+#ifndef ATOM_DISABLE_DEBUGGER
   Emit("devtools-focused");
+#endif
 }
 
 void WebContents::DevToolsOpened() {
+#ifndef ATOM_DISABLE_DEBUGGER
   v8::Locker locker(isolate());
   v8::HandleScope handle_scope(isolate());
   auto handle = WebContents::CreateFrom(
@@ -913,14 +928,17 @@ void WebContents::DevToolsOpened() {
                            owner_window());
 
   Emit("devtools-opened");
+#endif
 }
 
 void WebContents::DevToolsClosed() {
+#ifndef ATOM_DISABLE_DEBUGGER
   v8::Locker locker(isolate());
   v8::HandleScope handle_scope(isolate());
   devtools_web_contents_.Reset();
 
   Emit("devtools-closed");
+#endif
 }
 
 bool WebContents::OnMessageReceived(const IPC::Message& message) {
@@ -1136,6 +1154,7 @@ bool WebContents::SavePage(const base::FilePath& full_file_path,
 }
 
 void WebContents::OpenDevTools(mate::Arguments* args) {
+#ifndef ATOM_DISABLE_DEBUGGER
   if (type_ == REMOTE)
     return;
 
@@ -1159,52 +1178,70 @@ void WebContents::OpenDevTools(mate::Arguments* args) {
   }
   managed_web_contents()->SetDockState(state);
   managed_web_contents()->ShowDevTools();
+#endif
 }
 
 void WebContents::CloseDevTools() {
+#ifndef ATOM_DISABLE_DEBUGGER
   if (type_ == REMOTE)
     return;
 
   managed_web_contents()->CloseDevTools();
+#endif
 }
 
 bool WebContents::IsDevToolsOpened() {
+#ifndef ATOM_DISABLE_DEBUGGER
   if (type_ == REMOTE)
     return false;
 
   return managed_web_contents()->IsDevToolsViewShowing();
+#else
+  return false;
+#endif
 }
 
 bool WebContents::IsDevToolsFocused() {
+#ifndef ATOM_DISABLE_DEBUGGER
   if (type_ == REMOTE)
     return false;
 
   return managed_web_contents()->GetView()->IsDevToolsViewFocused();
+#else
+  return false;
+#endif
 }
 
 void WebContents::EnableDeviceEmulation(
     const blink::WebDeviceEmulationParams& params) {
+#ifndef ATOM_DISABLE_DEBUGGER
   if (type_ == REMOTE)
     return;
 
   Send(new ViewMsg_EnableDeviceEmulation(routing_id(), params));
+#endif
 }
 
 void WebContents::DisableDeviceEmulation() {
+#ifndef ATOM_DISABLE_DEBUGGER
   if (type_ == REMOTE)
     return;
 
   Send(new ViewMsg_DisableDeviceEmulation(routing_id()));
+#endif
 }
 
 void WebContents::ToggleDevTools() {
+#ifndef ATOM_DISABLE_DEBUGGER
   if (IsDevToolsOpened())
     CloseDevTools();
   else
     OpenDevTools(nullptr);
+#endif
 }
 
 void WebContents::InspectElement(int x, int y) {
+#ifndef ATOM_DISABLE_DEBUGGER
   if (type_ == REMOTE)
     return;
 
@@ -1214,9 +1251,11 @@ void WebContents::InspectElement(int x, int y) {
   if (!managed_web_contents()->GetDevToolsWebContents())
     OpenDevTools(nullptr);
   managed_web_contents()->InspectElement(x, y);
+#endif
 }
 
 void WebContents::InspectServiceWorker() {
+#ifndef ATOM_DISABLE_DEBUGGER
   if (type_ == REMOTE)
     return;
 
@@ -1231,6 +1270,7 @@ void WebContents::InspectServiceWorker() {
       break;
     }
   }
+#endif
 }
 
 void WebContents::HasServiceWorker(
@@ -1712,18 +1752,26 @@ void WebContents::SetEmbedder(const WebContents* embedder) {
 }
 
 v8::Local<v8::Value> WebContents::DevToolsWebContents(v8::Isolate* isolate) {
+#ifndef ATOM_DISABLE_DEBUGGER
   if (devtools_web_contents_.IsEmpty())
     return v8::Null(isolate);
   else
     return v8::Local<v8::Value>::New(isolate, devtools_web_contents_);
+#else
+  return v8::Null(isolate);
+#endif
 }
 
 v8::Local<v8::Value> WebContents::Debugger(v8::Isolate* isolate) {
+#ifndef ATOM_DISABLE_DEBUGGER
   if (debugger_.IsEmpty()) {
     auto handle = atom::api::Debugger::Create(isolate, web_contents());
     debugger_.Reset(isolate, handle.ToV8());
   }
   return v8::Local<v8::Value>::New(isolate, debugger_);
+#else
+  return v8::Null(isolate);
+#endif
 }
 
 // static

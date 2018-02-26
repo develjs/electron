@@ -28,10 +28,14 @@ void CommonWebContentsDelegate::HandleKeyboardEvent(
 }
 
 gfx::ImageSkia CommonWebContentsDelegate::GetDevToolsWindowIcon() {
+#ifndef ATOM_DISABLE_DEBUGGER
   if (!owner_window())
     return gfx::ImageSkia();
   return static_cast<views::WidgetDelegate*>(static_cast<NativeWindowViews*>(
       owner_window()))->GetWindowAppIcon();
+#else
+  return gfx::ImageSkia();
+#endif
 }
 
 #if defined(USE_X11)

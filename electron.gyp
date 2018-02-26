@@ -26,14 +26,16 @@
 	    'defines': [
             '<!(if DEFINED ASAR_ENCODE_KEY  echo ASAR_ENCODE_KEY=%ASAR_ENCODE_KEY%)',
             '<!(if DEFINED ATOM_INTERNAL_RC echo ATOM_INTERNAL_RC=%ATOM_INTERNAL_RC%)',
-            '<!(if DEFINED ATOM_BOOT_RC echo ATOM_BOOT_RC=%ATOM_BOOT_RC%)'
+            '<!(if DEFINED ATOM_BOOT_RC echo ATOM_BOOT_RC=%ATOM_BOOT_RC%)',
+            '<!(if DEFINED ATOM_DISABLE_DEBUGGER echo ATOM_DISABLE_DEBUGGER=%ATOM_DISABLE_DEBUGGER%)'
         ]
 	  }],
 	  ['OS!="win"', {
 	    'defines': [
             '<!(if [ -n $ASAR_ENCODE_KEY  ]; then echo ASAR_ENCODE_KEY=$ASAR_ENCODE_KEY;   fi)',
             '<!(if [ -n $ATOM_INTERNAL_RC ]; then echo ATOM_INTERNAL_RC=$ATOM_INTERNAL_RC; fi)',
-            '<!(if [ -n $ATOM_BOOT_RC ]; then echo ATOM_BOOT_RC=$ATOM_BOOT_RC; fi)'
+            '<!(if [ -n $ATOM_BOOT_RC ]; then echo ATOM_BOOT_RC=$ATOM_BOOT_RC; fi)',
+            '<!(if [ -n $ATOM_DISABLE_DEBUGGER ]; then echo ATOM_DISABLE_DEBUGGER=$ATOM_DISABLE_DEBUGGER; fi)'
         ]
 	  }]
     ],

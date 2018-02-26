@@ -159,6 +159,7 @@ class CommonWebContentsDelegate
   // crash would happen.
   std::unique_ptr<brightray::InspectableWebContents> web_contents_;
 
+#ifndef ATOM_DISABLE_DEBUGGER
   // Maps url to file path, used by the file requests sent from devtools.
   typedef std::map<std::string, base::FilePath> PathsMap;
   PathsMap saved_files_;
@@ -169,6 +170,7 @@ class CommonWebContentsDelegate
       scoped_refptr<DevToolsFileSystemIndexer::FileSystemIndexingJob>>
       DevToolsIndexingJobsMap;
   DevToolsIndexingJobsMap devtools_indexing_jobs_;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(CommonWebContentsDelegate);
 };

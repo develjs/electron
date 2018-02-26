@@ -35,7 +35,9 @@ REFERENCE_MODULE(atom_browser_app);
 REFERENCE_MODULE(atom_browser_auto_updater);
 REFERENCE_MODULE(atom_browser_browser_view);
 REFERENCE_MODULE(atom_browser_content_tracing);
+#ifndef ATOM_DISABLE_DEBUGGER
 REFERENCE_MODULE(atom_browser_debugger);
+#endif
 REFERENCE_MODULE(atom_browser_desktop_capturer);
 REFERENCE_MODULE(atom_browser_dialog);
 REFERENCE_MODULE(atom_browser_download_item);
@@ -198,11 +200,13 @@ node::Environment* NodeBindings::CreateEnvironment(
   PathService::Get(content::CHILD_PROCESS_EXE, &helper_exec_path);
   process.Set("helperExecPath", helper_exec_path);
 
+#ifndef ATOM_DISABLE_DEBUGGER
   // Set process._debugWaitConnect if --debug-brk was specified to stop
   // the debugger on the first line
   if (browser_env_ == BROWSER &&
       base::CommandLine::ForCurrentProcess()->HasSwitch("debug-brk"))
     process.Set("_debugWaitConnect", true);
+#endif
 
   return env;
 }

@@ -12,7 +12,9 @@
 #include "atom/browser/bridge_task_runner.h"
 #include "atom/browser/browser.h"
 #include "atom/browser/javascript_environment.h"
+#ifndef ATOM_DISABLE_DEBUGGER
 #include "atom/browser/node_debugger.h"
+#endif
 #include "atom/common/api/atom_bindings.h"
 #include "atom/common/asar/asar_util.h"
 #include "atom/common/node_bindings.h"
@@ -23,7 +25,9 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "device/geolocation/geolocation_delegate.h"
 #include "device/geolocation/geolocation_provider.h"
+#ifndef ATOM_DISABLE_DEBUGGER
 #include "v8/include/v8-debug.h"
+#endif
 
 #if defined(USE_X11)
 #include "chrome/browser/ui/libgtkui/gtk_util.h"
@@ -129,17 +133,21 @@ void AtomBrowserMainParts::PostEarlyInitialization() {
 
   node_bindings_->Initialize();
 
+#ifndef ATOM_DISABLE_DEBUGGER
   // Support the "--debug" switch.
   node_debugger_.reset(new NodeDebugger(js_env_->isolate()));
+#endif
 
   // Create the global environment.
   node::Environment* env =
       node_bindings_->CreateEnvironment(js_env_->context());
   node_env_.reset(new NodeEnvironment(env));
 
+#ifndef ATOM_DISABLE_DEBUGGER
   // Make sure node can get correct environment when debugging.
   if (node_debugger_->IsRunning())
     env->AssignToContext(v8::Debug::GetDebugContext(js_env_->isolate()));
+#endif
 
   // Add Electron extended APIs.
   atom_bindings_->BindTo(js_env_->isolate(), env->process_object());

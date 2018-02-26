@@ -21,7 +21,9 @@ class AtomBindings;
 class Browser;
 class JavascriptEnvironment;
 class NodeBindings;
+#ifndef ATOM_DISABLE_DEBUGGER
 class NodeDebugger;
+#endif
 class NodeEnvironment;
 class BridgeTaskRunner;
 
@@ -83,8 +85,9 @@ class AtomBrowserMainParts : public brightray::BrowserMainParts {
   std::unique_ptr<NodeBindings> node_bindings_;
   std::unique_ptr<AtomBindings> atom_bindings_;
   std::unique_ptr<NodeEnvironment> node_env_;
+#ifndef ATOM_DISABLE_DEBUGGER
   std::unique_ptr<NodeDebugger> node_debugger_;
-
+#endif
   base::Timer gc_timer_;
 
   // List of callbacks should be executed before destroying JS env.

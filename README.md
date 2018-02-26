@@ -123,6 +123,7 @@ export ATOM_BOOT_RC=boot_js.h
 ...
 ```
 
+Also you may use ATOM_DISABLE_DEBUGGER=1 directive to disable chrome debuger features.
 
 
 ## Community
