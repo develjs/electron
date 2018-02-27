@@ -38,7 +38,7 @@ using content::BrowserThread;
 namespace atom {
 
 namespace {
-
+#ifndef ATOM_DISABLE_DEBUGGER
 const char kRootName[] = "<root>";
 
 struct FileSystem {
@@ -146,7 +146,7 @@ bool IsDevToolsFileSystemAdded(
   auto file_system_paths = GetAddedFileSystemPaths(web_contents);
   return file_system_paths.find(file_system_path) != file_system_paths.end();
 }
-
+#endif
 }  // namespace
 
 CommonWebContentsDelegate::CommonWebContentsDelegate()
